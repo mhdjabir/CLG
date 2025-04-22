@@ -1,0 +1,152 @@
+<section class="service-sec">
+  <div class="banner-sec">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8 col-8">
+          <div class="banner-content">
+            <h1>Fresh & Organic Food, Delivered to Your Doorstep</h1>
+            <h2>Premium quality at prices you'll love!</h2>
+          </div>
+        </div>
+        <div class="col-md-4 col-4">
+          <img
+            class="bgimg img-fluid"
+            src="/images/bg.jpg"
+            alt="Organic Food"
+          />
+        </div>
+      </div>
+    </div>
+  </div> 
+
+  <div class="producthead container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="title-h">Products</h2>
+      </div>
+    </div>
+
+    <div class="content-head">
+      <a href="/">All</a>
+      |
+      <a href="/category/Spice Powder">Spice Powders</a>
+      |
+      <a href="/category/Cooking Oil">Cooking Oil</a>
+      |
+    </div>
+
+    <div class="sub-head">
+      <h3>{{#if selectedCategory}}{{selectedCategory}}{{else}}All Products{{/if}}</h3>
+      <div class="container">
+        <div class="row g-4">
+          {{#each products}}
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="card product-card">
+                <img
+                  src="/product-images/{{this._id}}.jpg"
+                  class="card-img-top product-img"
+                  alt="{{this.name}}"
+                  onerror="this.src='/images/default-product.jpg';"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">{{this.name}}</h5>
+                  <p class="card-text text-muted">{{this.weight}}</p>
+                  <div class="d-flex align-items-center">
+                    <span class="price fw-bold me-auto">₹{{this.price}}</span>
+                  </div>
+                  <button
+                    onclick="addToCart('{{this._id}}')"
+                    class="addtocart btn btn-primary w-100 mt-3"
+                    aria-label="Add {{this.name}} to cart"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div
+    class="container-fluid mx-auto mt-5 mb-5 col-12"
+    style="text-align: center"
+  >
+    <div class="hd">Why People Believe in Us</div>
+    <p><small class="text-muted">Always render more and better service than
+        <br />is expected of you.</small></p>
+    <div class="row" style="justify-content: center">
+      <div class="card col-md-3 col-12">
+        <div class="card-content">
+          <div class="card-body">
+            <img class="img" src="https://i.imgur.com/S7FJza5.png" />
+            <div class="shadow"></div>
+            <div class="card-title">100% Refund</div>
+            <div class="card-subtitle">
+              <p>
+                <small class="text-muted">Your satisfaction is our priority! If
+                  your order arrives damaged, we offer a 100% refund — no
+                  questions asked. Shop with confidence knowing you're
+                  protected.</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card col-md-3 col-12 ml-2">
+        <div class="card-content">
+          <div class="card-body">
+            <img class="img" src="https://i.imgur.com/xUWJuHB.png" />
+            <div class="card-title"> Premium Packaging</div>
+            <div class="card-subtitle">
+              <p>
+                <small class="text-muted">
+                  Every order is packed with care using premium materials,
+                  ensuring your items stay safe and fresh. No extra charges —
+                  packaging is completely free!
+
+                </small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card col-md-3 col-12 ml-2">
+        <div class="card-content">
+          <div class="card-body">
+            <img class="img rck" src="https://i.imgur.com/rG3CGn3.png" />
+            <div id="third" class="card-title"> Superfast Delivery</div>
+            <div class="card-subtitle">
+              <p>
+                <small class="text-muted">We know you can’t wait to get your
+                  hands on your favorite products, and you shouldn’t have to.
+                  That’s why we offer 1-day delivery on all eligible orders.
+                  Fast. Reliable. Right to your doorstep.</small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ft">
+      <p class="chk"><small class="text-muted"></small></p>
+      <a href="/reviews" class="btn btn-primary">Customer Reviews</a>
+    </div>
+  </div>
+
+  <style>
+    head, body { background-color: rgb(255, 255, 255); } #third { margin-top:
+    -30px; } .card { cursor: pointer; } .hd { font-size: 25px; font-weight: 550;
+    } .card.hover, .card:hover { box-shadow: 0 20px 40px rgba(0, 0, 0, .2); }
+    .img { width: 100px; /* Adjust size here */ height: auto; margin-bottom:
+    35px; -webkit-filter: drop-shadow(5px 5px 5px #222); filter: drop-shadow(5px
+    5px 5px #222); } .card-title { font-weight: 600; } button.focus,
+    button:focus { outline: 0; box-shadow: none !important; } .ft { margin-top:
+    25px; } .chk { margin-bottom: 5px; } .rck { margin-top: 20px;
+    padding-bottom: 15px; }
+  </style>
+</section>

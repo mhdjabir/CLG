@@ -1,0 +1,34 @@
+<section>
+    <div class="container mt-5">
+        <h2 class="text-center">All Orders</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each orders}} 
+                    <tr> 
+                        <td>{{add @index 1}}</td>
+                        <td>{{this._id}}</td>
+                        <td>{{this.user.name}}</td> <!-- Display user's name -->
+                        <td>₹{{this.totalAmount}}</td>
+                        <td>{{this.status}}</td>
+                        <td>
+                            <a href="/admin/order-details/{{this._id}}" class="btn btn-primary btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table> 
+        </div> 
+    </div>
+</section>
+

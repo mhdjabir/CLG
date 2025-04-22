@@ -1,0 +1,31 @@
+<form id="paymentForm" action="/create-order" method="POST">
+  <input type="hidden" name="amount" value="{{total}}">
+  <select id="payment-method" name="paymentMethod" class="form-control mb-3">
+    <option value="cash-on-delivery">Cash on Delivery</option>
+    <option value="online-payment">Online Payment</option>
+  </select>
+  <button type="submit" class="btn btn-success">Proceed to Pay ₹{{total}}</button>
+</form>
+
+<script>
+  document.getElementById("paymentForm").addEventListener("submit", function (e) {
+    const selectedMethod = document.getElementById("payment-method").value;
+    if (selectedMethod === "cash-on-delivery") { 
+      e.preventDefault();
+      fetch('/place-order', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod: "cash-on-delivery" })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = "/order-success";
+        } else {
+          alert("Order failed.");
+        }
+      });
+    }
+    // Else, let it submit to /create-order (handled in backend)
+  }); 
+</script>

@@ -1,0 +1,138 @@
+<section>
+    <div class="container mt-5">
+        <h2 class="text-center">Your Orders</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Order ID</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Deliver In</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each orders}}
+                    <tr id="order-row-{{this._id}}">
+                        <td>{{add @index 1}}</td>
+                        <td>{{this._id}}</td>
+                        <td>₹{{this.totalAmount}}</td>
+                        <td id="status-{{this._id}}">{{this.status}}</td>
+                        <td id="timer-{{this._id}}">
+                            {{#if (eq this.status "Arriving Soon")}}
+                                <span 
+                                    data-timer="{{this.remainingTime}}" 
+                                    data-created-at="{{this.createdAt}}" 
+                                    data-total-duration="86400" 
+                                    class="countdown">
+                                </span>
+                            {{/if}}
+                        </td>
+                        <td id="actions-{{this._id}}">
+                            <div class="d-flex gap-2">
+                                {{#if (eq this.status "Arriving Soon")}}
+                                    <button class="btn btn-danger btn-sm action-btn" onclick="cancelOrder('{{this._id}}')">Cancel</button>
+                                {{/if}}
+                                <a href="/order-details/{{this._id}}" class="btn btn-primary btn-sm action-btn">View</a>
+
+                            </div>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Function to handle order cancellation
+    function cancelOrder(orderId) {
+        if (confirm('Are you sure you want to cancel this order?')) {
+            fetch('/cancel-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the page after cancellation
+                    location.reload();
+                } else {
+                    alert('Failed to cancel order. Please try again.');
+                }
+            })
+            .catch(err => console.error('Error canceling order:', err));
+        }
+    }
+
+    // Function to initialize countdown timers
+    function initializeTimers() {
+        const timers = document.querySelectorAll('.countdown');
+        timers.forEach(timer => {
+            const createdAt = new Date(timer.getAttribute('data-created-at')); // Order creation time
+            const totalDuration = parseInt(timer.getAttribute('data-total-duration'), 10); // Total duration in seconds
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - createdAt) / 1000); // Elapsed time in seconds
+            const remainingTime = totalDuration - elapsedTime;
+
+            if (remainingTime > 0) {
+                const interval = setInterval(() => {
+                    const currentTime = new Date();
+                    const elapsedTime = Math.floor((currentTime - createdAt) / 1000);
+                    const remainingTime = totalDuration - elapsedTime;
+
+                    if (remainingTime <= 0) {
+                        clearInterval(interval);
+                        const orderId = timer.closest('tr').id.split('-')[2];
+                        document.getElementById(`status-${orderId}`).textContent = 'Arrived';
+                        timer.textContent = '';
+                        // Hide the cancel button
+                        const cancelButton = document.querySelector(`#actions-${orderId} .btn-danger`);
+                        if (cancelButton) {
+                            cancelButton.style.display = 'none';
+                        }
+                    } else {
+                        const hours = Math.floor(remainingTime / 3600);
+                        const minutes = Math.floor((remainingTime % 3600) / 60);
+                        const seconds = remainingTime % 60;
+                        timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
+                    }
+                }, 1000);
+            } else {
+                const orderId = timer.closest('tr').id.split('-')[2];
+                document.getElementById(`status-${orderId}`).textContent = 'Arrived';
+                timer.textContent = '';
+                // Hide the cancel button
+                const cancelButton = document.querySelector(`#actions-${orderId} .btn-danger`);
+                if (cancelButton) {
+                    cancelButton.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // Initialize timers on page load
+    document.addEventListener('DOMContentLoaded', initializeTimers);
+</script>
+
+<style>
+    .d-flex {
+        display: flex;
+        align-items:end;
+        justify-content: flex-end;
+    }
+
+    .gap-2 {
+        gap: 0.5rem; /* Adjust the gap between buttons */
+    }
+
+    .action-btn {
+        width: 100px; /* Set a fixed width for both buttons */
+        text-align: center;
+    }
+</style>
+

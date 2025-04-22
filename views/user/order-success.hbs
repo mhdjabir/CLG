@@ -1,0 +1,283 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 0;
+    }
+
+    .order-success {
+        text-align: center;
+        margin-top: 24px;
+    }
+
+    .order-success h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff9a47;
+    }
+
+    .invoice-container {
+        max-width: 800px; 
+        margin: 32px auto; 
+        padding: 32px;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .invoice-meta {
+        text-align: right;
+    }
+
+    .invoice-meta .label {
+        color: #94a3b8;
+    }
+
+    .invoice-meta .value {
+        font-weight: bold;
+        color: #ff9a47;
+    }
+
+    .company-info h2 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff9a47;
+    }
+
+    .user-info {
+        display: flex;
+        justify-content: space-between;
+        background-color: #f1f5f9;
+        padding: 24px;
+        margin-bottom: 24px;
+        border-radius: 6px;
+    }
+
+    .user-info .user-left p {
+        margin: 4px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .user-info .large {
+        font-size: 18px;
+    }
+
+    .user-info .bold {
+        font-weight: bold;
+    }
+
+    .color-main {
+        color: #ff9a47;
+    }
+
+    .invoice-table {
+        width: 100%;
+        font-size: 14px;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+    }
+
+    .invoice-table th {
+        border-bottom: 2px solid #ff9a47;
+        text-align: left;
+        padding: 8px 0;
+        color: #ff9a47;
+    }
+
+    .invoice-table td {
+        padding: 8px 0;
+        border-bottom: 1px solid #d1d5db;
+    }
+
+    .text-right {
+        text-align: right;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .totals {
+        background-color: #f3f4f6;
+        padding: 24px;
+        border-radius: 6px;
+    }
+
+    .totals-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .totals-final {
+        display: flex;
+        justify-content: space-between;
+        background-color: #ff9a47;
+        color: white;
+        padding: 16px;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+
+    .thank-you {
+        text-align: center;
+        margin-top: 32px;
+        color: #64748b;
+    }
+
+    .thank-you h4 {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .download-btn-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+    }
+
+    .download-btn-wrapper button {
+        background-color: #f97316;
+        color: white;
+        padding: 6px 12px;
+        font-size: 14px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        /* Ensure it doesn't stretch */
+        width: auto;
+        /* Set width to auto for regular button size */
+        margin-bottom: 2rem;
+    }
+
+
+    .download-btn-wrapper button:hover {
+        background-color: #ea580c;
+    }
+
+    @media print {
+        .download-btn-wrapper {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Order Success Message -->
+<div class="order-success">
+    <h2>Your order is successful!</h2>
+</div>
+
+<!-- Invoice -->
+<div class="invoice-container" id="invoice">
+    <div class="invoice-header">
+        <div class="company-info">
+            <h2>EKS</h2>
+            <p>YELAHANKA NEW TOWN </p>
+            <p>Port Orlofurt, 05820</p>
+            <p>INDIA</p>
+            <p>Phone: +1 3649-6589</p>
+            <p>Email: EKSSPICE@gmail.com</p>
+        </div>
+        <div class="invoice-meta">
+            <p class="label">Date</p>
+            <p class="value">{{orderDate}}</p>
+            <p class="label">Invoice #</p>
+            <p class="value">{{orderId}}</p>
+        </div>
+    </div>
+
+    <div class="user-info">
+        <div class="user-left">
+            <p class="bold large">{{user.name}}</p>
+            <p><i class="fas fa-map-marker-alt"></i>{{address.address}}</p>
+            <p>{{address.city}}, {{address.state}} {{address.zip}}</p>
+            <p><i class="fas fa-envelope"></i>{{user.email}}</p>
+            <p><i class="fas fa-phone"></i>{{user.phone}}</p> <!-- Display phone number -->
+        </div>
+        <div class="text-right">
+            <p class="bold color-main">Payment Method</p>
+            <p>{{paymentMethod}}</p>
+        </div>
+    </div>
+
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Product Details</th>
+                <th class="text-right">Price</th>
+                <th class="text-center">Qty</th>
+                <th class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each items}}
+            <tr>
+                <td>{{add @index 1}}</td> <!-- Add 1 to @index -->
+                <td>{{this.productDetails.name}}</td>
+                <td class="text-right">₹{{this.productDetails.price}}</td>
+                <td class="text-center">{{this.quantity}}</td>
+                <td class="text-right">₹{{multiply this.quantity this.productDetails.price}}</td>
+            </tr>
+            {{/each}}
+
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="totals-row">
+            <span class="label">Net Total:</span>
+            <span class="value">₹{{subtotal}}</span>
+        </div>
+        <div class="totals-row">
+            <span class="label">Shipping:</span>
+            <span class="value">₹{{shipping}}</span>
+        </div>
+        <div class="totals-final">
+            <span>Total:</span>
+            <span>₹{{total}}</span>
+        </div>
+    </div>
+
+    <div class="thank-you">
+        <h4>Thanks for shopping!</h4>
+    </div>
+</div>
+
+<!-- Download Button -->
+<div class="download-btn-wrapper">
+    <button onclick="downloadPDF()">
+        <i class="fas fa-file-download" style="margin-right: 8px;"></i>Download PDF
+    </button>
+</div>
+
+<!-- Script for PDF -->
+<script>
+    function downloadPDF() {
+        const element = document.getElementById("invoice");
+        const options = {
+            margin: 0.5,
+            filename: `invoice_{{orderId}}.pdf`,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+        };
+        html2pdf().set(options).from(element).save();
+    } 
+</script>

@@ -1,0 +1,51 @@
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .card {
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto; 
+    }
+
+    .container1 {
+        margin-top: clamp(6rem, 20vw, 10rem); 
+    }
+</style> 
+<div class="container1 d-flex justify-content-center align-items-center">
+    <div class="card p-4 shadow" style="width: 24rem;">
+        <h3 class="text-center mb-4">Login</h3>
+        <form action="/login" method="post">
+        {{#if loginErr}}     
+         <p class="text-center mt-3 text-danger">{{loginErr}}</p>
+        {{/if}}
+        {{#if redirectMessage}}
+        <p class="text-center text-warning">{{redirectMessage}}</p>
+        {{/if}}
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    placeholder="Enter your password" required>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <p class="text-center mt-3">
+                <a href="/signup" class="text-decoration-none">Create a new account</a>
+            </p>
+        </form>
+    </div>
+</div>
