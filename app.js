@@ -7,11 +7,9 @@ var logger = require('morgan');
 var session = require('express-session');
 var fileUpload = require('express-fileupload');
 var { engine } = require('express-handlebars');
-var db = require('./config/connection'); // Ensure the path is correct
+var db = require('./config/connection'); // Database connection
 var adminRouter = require('./routes/admin');
 var userRouter = require('./routes/user');
-var paymentRoutes = require("./routes/payment");
-const verifyPaymentRoutes = require('./routes/verify-payment');
 
 var app = express();
 
@@ -60,8 +58,6 @@ db.connect((err) => {
 // Routes
 app.use('/admin', adminRouter);
 app.use('/', userRouter);
-app.use("/", paymentRoutes);
-app.use('/verify-payment', verifyPaymentRoutes);
 
 // 404 Error handler
 app.use((req, res) => {

@@ -26,6 +26,7 @@
       <div class="form-group">
         <label for="phone">Phone Number:</label>
         <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+        <span id="phoneError" class="error-message"></span> <!-- Error message container -->
       </div>
       <button type="submit" id="saveButton" class="btn">Save</button>
     </form>
@@ -35,7 +36,7 @@
     <table class="order-table">
       <thead>
         <tr>
-          <h3>Total amount: ₹{{total}}</h3>
+          <h3>Total amount: ₹{{total}}</h3> 
         </tr>
       </thead>
     </table>
@@ -61,6 +62,7 @@
   </div>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const addressForm = document.getElementById('addressForm');
@@ -98,13 +100,20 @@
     addressForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
+      const phoneInput = document.getElementById('phone');
+      const phoneError = document.getElementById('phoneError');
       const formData = new FormData(e.target);
       const addressData = Object.fromEntries(formData.entries());
 
       // Validate phone number length
-      if (addressData.phone.length < 10) {
-        alert('Phone number must be at least 10 digits.');
+      if (!addressData.phone || addressData.phone.length !== 10 || isNaN(addressData.phone)) {
+        phoneError.textContent = 'Phone number must be exactly 10 digits.';
+        phoneError.style.display = 'block'; // Show the error message
+        phoneInput.classList.add('input-error'); // Optional: Add a red border to the input
         return;
+      } else {
+        phoneError.style.display = 'none'; // Hide the error message if valid
+        phoneInput.classList.remove('input-error');
       }
 
       fetch('/save-address', {
@@ -118,10 +127,15 @@
             alert('Address saved successfully!');
             saveButton.style.display = 'none'; // Hide the save button after saving
           } else {
-            alert('Failed to save address.');
+            phoneError.textContent = data.message || 'Failed to save address.';
+            phoneError.style.display = 'block';
           }
         })
-        .catch(err => console.error('Error saving address:', err));
+        .catch(err => {
+          phoneError.textContent = 'An error occurred while saving the address.';
+          phoneError.style.display = 'block';
+          console.error('Error saving address:', err);
+        });
     });
 
     // Function to toggle buttons based on payment method
@@ -165,6 +179,61 @@
           .catch(err => console.error('Error placing order:', err));
       }
     });
+  });
+
+  document.getElementById('proceedToPayForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const response = await fetch('/place-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod: 'online-payment' }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+        const options = {
+            key: data.key,
+            amount: data.amount * 100, // Amount in paise
+            currency: 'INR',
+            name: 'EKS Store',
+            description: 'Order Payment',
+            order_id: data.razorpayOrderId,
+            handler: async function (response) {
+                const verifyResponse = await fetch('/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpayOrderId: response.razorpay_order_id,
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        razorpaySignature: response.razorpay_signature,
+                    }),
+                });
+
+                const verifyData = await verifyResponse.json();
+                if (verifyData.success) {
+                    window.location.href = verifyData.redirect;
+                } else {
+                    alert('Payment verification failed. Redirecting to place order page.');
+                    window.location.href = verifyData.redirect;
+                }
+            },
+            prefill: {
+                name: '{{user.name}}',
+                email: '{{user.email}}',
+                contact: '{{user.phone}}',
+            },
+            theme: {
+                color: '#ff9a47',
+            },
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+    } else {
+        alert('Failed to initiate payment. Please try again.');
+    }
   });
 </script>
 
@@ -268,5 +337,16 @@
   .checkout-button {
     margin-top: 20px;
     text-align: right;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none; /* Initially hidden */
+  }
+
+  .input-error {
+    border: 1px solid red;
   }
 </style>

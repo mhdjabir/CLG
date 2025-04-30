@@ -5,6 +5,14 @@ const collection = require('../config/collections'); // Import collections
 const productHelpers = require('../helpers/product-helpers');
 const userHelpers = require('../helpers/user-helpers');
 const { ObjectId } = require('mongodb'); // Import ObjectId for MongoDB operations
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
+
+// Initialize Razorpay instance
+const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID, // Use the key from .env
+    key_secret: process.env.RAZORPAY_SECRET, // Use the secret from .env
+});
 
 // Middleware to verify if the user is logged in
 const verifyLogin = (req, res, next) => {
@@ -174,13 +182,20 @@ router.get('/place-order', verifyLogin, async (req, res) => {
 // POST save address
 router.post('/save-address', verifyLogin, async (req, res) => {
     try {
+        const { phone } = req.body;
+
+        // Validate phone number length
+        if (!phone || phone.length !== 10 || isNaN(phone)) {
+            return res.status(400).json({ success: false, message: 'Phone number must be exactly 10 digits.' });
+        }
+
         const userId = req.session.user._id;
         const address = req.body;
 
         await db.get().collection(collection.ADDRESS_COLLECTION).updateOne(
             { user: new ObjectId(userId) },
             { $set: { address } },
-            { upsert: true }
+            { upsert: true } // Create a new document if it doesn't exist
         );
 
         res.json({ success: true });
@@ -204,7 +219,7 @@ router.get('/get-address', verifyLogin, async (req, res) => {
     }
 });
 
-// POST place order
+// POST place order with Razorpay integration
 router.post('/place-order', verifyLogin, async (req, res) => {
     try {
         const userId = req.session.user._id;
@@ -215,27 +230,96 @@ router.post('/place-order', verifyLogin, async (req, res) => {
         const shipping = 40; // Fixed shipping charge
         const totalAmount = subtotal + shipping;
 
+        // Fetch the user's address
         const userAddress = await db.get().collection(collection.ADDRESS_COLLECTION).findOne({ user: new ObjectId(userId) });
 
-        const order = {
-            userId: new ObjectId(userId),
-            items: cartItems,
-            subtotal,
-            shipping,
-            totalAmount,
-            paymentMethod,
-            status: 'Arriving Soon',
-            remainingTime: 24 * 60 * 60, // 24 hours in seconds
-            createdAt: new Date(), // Timestamp when the order is placed
-        };
+        if (paymentMethod === 'online-payment') {
+            // Create Razorpay order
+            const options = {
+                amount: totalAmount * 100, // Amount in paise
+                currency: 'INR',
+                receipt: `receipt_${Date.now()}`,
+            };
 
-        await db.get().collection(collection.ORDER_COLLECTION).insertOne(order);
-        await db.get().collection(collection.CART_COLLECTION).deleteOne({ user: new ObjectId(userId) });
+            const razorpayOrder = await razorpay.orders.create(options);
 
-        res.json({ success: true });
+            // Save the order details in the database with status "PENDING"
+            const order = {
+                userId: new ObjectId(userId),
+                items: cartItems,
+                subtotal,
+                shipping,
+                totalAmount,
+                paymentMethod,
+                address: userAddress?.address || {}, // Include the shipping address
+                status: 'Failed',
+                razorpayOrderId: razorpayOrder.id,
+                createdAt: new Date(),
+            };
+
+            await db.get().collection(collection.ORDER_COLLECTION).insertOne(order);
+
+            // Send Razorpay order details to the client
+            return res.json({ success: true, razorpayOrderId: razorpayOrder.id, amount: totalAmount, key: process.env.RAZORPAY_KEY_ID });
+        } else {
+            // Handle Cash on Delivery
+            const order = {
+                userId: new ObjectId(userId),
+                items: cartItems,
+                subtotal,
+                shipping,
+                totalAmount,
+                paymentMethod,
+                address: userAddress?.address || {}, // Include the shipping address
+                status: 'Arriving Soon',
+                createdAt: new Date(),
+            };
+
+            await db.get().collection(collection.ORDER_COLLECTION).insertOne(order);
+            await db.get().collection(collection.CART_COLLECTION).deleteOne({ user: new ObjectId(userId) });
+
+            return res.json({ success: true, redirect: '/order-success' });
+        }
     } catch (err) {
         console.error('Error placing order:', err);
         res.json({ success: false });
+    }
+});
+
+router.post('/verify-payment', verifyLogin, async (req, res) => {
+    try {
+        const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
+
+        // Generate the expected signature
+        const generatedSignature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_SECRET)
+            .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+            .digest('hex');
+
+        if (generatedSignature === razorpaySignature) {
+            // Update the order status to "SUCCESS"
+            await db.get().collection(collection.ORDER_COLLECTION).updateOne(
+                { razorpayOrderId },
+                { $set: { status: 'Arriving Soon', razorpayPaymentId } }
+            );
+
+            // Clear the cart
+            const userId = req.session.user._id;
+            await db.get().collection(collection.CART_COLLECTION).deleteOne({ user: new ObjectId(userId) });
+
+            return res.json({ success: true, redirect: '/order-success' });
+        } else {
+            // Payment verification failed
+            await db.get().collection(collection.ORDER_COLLECTION).updateOne(
+                { razorpayOrderId },
+                { $set: { status: 'FAILED' } }
+            );
+
+            return res.json({ success: false, message: 'Payment verification failed', redirect: '/place-order' });
+        }
+    } catch (err) {
+        console.error('Error verifying payment:', err);
+        res.status(500).json({ success: false, message: 'Internal server error', redirect: '/place-order' });
     }
 });
 
@@ -253,12 +337,11 @@ router.get('/order-success', verifyLogin, async (req, res) => {
             return res.redirect('/orders');
         }
 
-        const userAddress = await db.get().collection(collection.ADDRESS_COLLECTION).findOne({ user: new ObjectId(userId) });
         const user = await db.get().collection(collection.USER_COLLECTION).findOne({ _id: new ObjectId(userId) });
 
         res.render('user/order-success', {
-            user: { ...req.session.user, phone: latestOrder.phone || user.phone },
-            address: userAddress?.address || null,
+            user: { ...req.session.user, phone: latestOrder.address.phone }, // Include phone from address
+            address: latestOrder.address, // Include address
             items: latestOrder.items,
             subtotal: latestOrder.totalAmount - 40,
             shipping: 40,
@@ -328,8 +411,14 @@ router.get('/payment', verifyLogin, (req, res) => {
 });
 
 // GET contact page
+// Route for Contact Us page
 router.get('/contact', (req, res) => {
     res.render('user/Contact', { user: req.session.user });
+});
+
+// Route for Terms and Conditions page
+router.get('/terms-and-conditions', (req, res) => {
+    res.render('user/terms-and-conditions', { user: req.session.user });
 });
 
 router.get('/reviews', async (req, res) => {
@@ -360,6 +449,10 @@ router.post('/submit-feedback', async (req, res) => {
         console.error('Error submitting feedback:', err);
         res.status(500).send('Error submitting feedback');
     }
+});
+
+router.get('/terms-and-conditions', (req, res) => {
+    res.render('user/terms-and-conditions', { user: req.session.user });
 });
 
 module.exports = router;

@@ -1,41 +1,119 @@
 <head>
-    <title>Tailwind CSS Contact Form</title>
+    <title>Feedback Form</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/1.2.0/tailwind.min.css">
-  </head>
-<body class="bg-gray-800 text-gray-100 px-8 py-12">
-<div class="text-center w-full">
-  <h1 class="text-4xl lg:text-6xl">Feedback Form</h1>
+</head>
+<body class="feedback-body">
+<div class="feedback-header">
+  <h1>Feedback Form</h1>
 </div>
-<div
-  class="max-w-screen-xl mt-24 px-8 grid gap-8 grid-cols-1 md:grid-cols-2 md:px-12 lg:px-16 xl:px-32 py-16 mx-auto bg-gray-100 text-gray-900 rounded-lg shadow-lg">
-  <div class="flex flex-col justify-between">
+<div class="feedback-container">
+  <div class="feedback-intro">
     <div>
-      <h2 class="text-4xl lg:text-5xl font-bold leading-tight">What's on your mind?</h2>
-       
+      <h2>What's on your mind?</h2>
     </div>
   </div>
   <form action="/submit-feedback" method="post">
-    <div>
-      <span class="uppercase text-sm text-gray-600 font-bold">Full Name</span>
-      <input class="w-full bg-gray-300 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
-        type="text" name="fullname" placeholder="Enter your name" required>
+    <div class="form-group">
+      <label for="fullname">Full Name</label>
+      <input id="fullname" type="text" name="fullname" placeholder="Enter your name" required>
     </div>
     
-    <div class="mt-8">
-      <span class="uppercase text-sm text-gray-600 font-bold">Message</span>
-      <textarea name="message"
-        class="w-full h-32 bg-gray-300 text-gray-900 mt-2 p-3 rounded-lg focus:outline-none focus:shadow-outline"
-        placeholder="Enter your feedback" required></textarea>
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" placeholder="Enter your feedback" required></textarea>
     </div>
-    <div class="mt-8">
-      <button
-        class="uppercase text-sm font-bold tracking-wide bg-indigo-500 text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline">
-        Submit
-      </button>
+    <div class="form-group">
+      <button type="submit">Submit</button>
     </div>
   </form>
-  </div>
 </div>
+</body>
+<style>
+    body.feedback-body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+  }
+  
+  .feedback-header {
+      color: white;
+      padding: 20px;
+      margin-top: 3rem;
+      text-align: center;
+  }
+  
+  .feedback-container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .feedback-intro h2 {
+      text-align: center;
+     margin-bottom: 20px;
+  }
+  
+  .form-group {
+      margin-bottom: 15px;
+  }
+  
+  .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+  }
+  
+  textarea {
+      resize: vertical;
+      min-height: 100px;
+  }
+  
+  button[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+      background-color: #45a049;
+  }
+  
+  @media (max-width: 600px) {
+      .feedback-container {
+          margin: 15px;
+          padding: 15px;
+      }
+  
+      button[type="submit"] {
+          width: 100%;
+      }
+  }
+</style>
 

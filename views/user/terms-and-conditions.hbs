@@ -1,0 +1,123 @@
+<section class="container mt-5">
+    <h2 class="text-center">Terms and Conditions</h2>
+    <div class="mt-4">
+        <div class="term-section">
+            <h4 class="collapsible"> Introduction</h4>
+            <p class="content">
+                Welcome to our website. By accessing or using our services, you agree to comply with and be bound by the following terms and conditions. Please read them carefully before using our platform.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Use of the Website</h4>
+            <p class="content">
+                You agree to use the website only for lawful purposes and in a way that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the website.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Account Responsibilities</h4>
+            <p class="content">
+                You are responsible for maintaining the confidentiality of your account and password and for restricting access to your account. You agree to accept responsibility for all activities that occur under your account.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Product Information</h4>
+            <p class="content">
+                We strive to ensure that all product descriptions, prices, and availability are accurate. However, errors may occur, and we reserve the right to correct any inaccuracies or omissions.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Payment and Refunds</h4>
+            <p class="content">
+                All payments must be made in full at the time of purchase. Refunds will only be issued in accordance with our refund policy.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Limitation of Liability</h4>
+            <p class="content">
+                We are not liable for any direct, indirect, incidental, or consequential damages arising from the use of our website or services.
+            </p>
+        </div>
+
+        <div class="term-section">
+            <h4 class="collapsible"> Changes to Terms</h4>
+            <p class="content">
+                We reserve the right to update or modify these terms and conditions at any time without prior notice. Your continued use of the website constitutes your acceptance of the updated terms.
+            </p>
+        </div>
+    </div>
+</section>
+
+<style>
+ 
+
+    h2 {
+        color: #ff9a47;
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h4 {
+        margin-top: 1rem;
+        font-size: 1.3rem;
+        cursor: pointer;
+        position: relative;
+        padding-left: 1.2rem;
+    }
+
+    h4::before {
+        position: absolute;
+        left: 0;
+        color: #999;
+        transition: transform 0.3s;
+    }
+
+    h4.active::before {
+        transform: rotate(90deg);
+    }
+
+    p {
+        margin-bottom: 1.2rem;
+        padding-left: 1rem;
+        display: none;
+    }
+
+    p.show {
+        display: block;
+    }
+
+    .term-section {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 1rem;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.collapsible').forEach(header => {
+        header.addEventListener('click', () => {
+            const content = header.nextElementSibling;
+            const isShown = content.classList.contains('show');
+            document.querySelectorAll('.content').forEach(p => p.classList.remove('show'));
+            document.querySelectorAll('.collapsible').forEach(h => h.classList.remove('active'));
+
+            if (!isShown) {
+                content.classList.add('show');
+                header.classList.add('active');
+            }
+        });
+    });
+</script>
