@@ -4,6 +4,7 @@ var db = require('../config/connection'); // Import database connection
 var collection = require('../config/collections'); // Import collections
 var productHelpers = require('../helpers/product-helpers');
 const { ObjectId } = require('mongodb'); // Import ObjectId for MongoDB operations
+const sharp = require('sharp');
 
 router.get('/', function(req, res, next) {
     productHelpers.getAllproducts().then((products) => {
@@ -32,13 +33,20 @@ router.post('/add-product', function(req, res) {
         if (result.insertedId) {
             let image = req.files?.image;
             if (image) {
-                image.mv('./public/product-images/' + result.insertedId + '.jpg', (err) => {
-                    if (err) {
-                        console.error('Error uploading image:', err);
-                        return res.status(500).send('Error uploading image');
-                    }
-                    res.redirect('/admin');
-                });
+                sharp(image.data)
+                    .resize(800, 800, { // Resize to reasonable dimensions
+                        fit: 'cover',
+                        withoutEnlargement: true
+                    })
+                    .jpeg({ quality: 80 }) // Compress JPEG
+                    .toFile('./public/product-images/' + result.insertedId + '.jpg')
+                    .then(() => {
+                        res.redirect('/admin');
+                    })
+                    .catch(err => {
+                        console.error('Error processing image:', err);
+                        res.status(500).send('Error processing image');
+                    });
             } else {
                 res.status(400).send('Image not provided');
             }
@@ -186,7 +194,8 @@ router.get('/order-details/:id', async (req, res) => {
                     items: 1,
                     totalAmount: 1,
                     status: 1,
-                    user: { $arrayElemAt: ['$userDetails', 0] } // Extract the first user object
+                    createdAt: 1, // Make sure to include this
+                    user: { $arrayElemAt: ['$userDetails', 0] }
                 }
             }
         ]).toArray();
@@ -195,10 +204,42 @@ router.get('/order-details/:id', async (req, res) => {
             return res.status(404).send('Order not found');
         }
 
-        res.render('admin/order-details', { admin: true, order: order[0] });
+        res.render('admin/order-details', { 
+            admin: true, 
+            order: order[0]
+        });
     } catch (err) {
         console.error('Error fetching order details:', err);
         res.status(500).send('Error fetching order details');
+    }
+});
+
+router.post('/assign-delivery/:orderId', async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const { partnerName, partnerPhone, vehicleNumber, expectedDelivery } = req.body;
+
+        await db.get().collection(collection.ORDER_COLLECTION).updateOne(
+            { _id: new ObjectId(orderId) },
+            {
+                $set: {
+                    deliveryInfo: {
+                        partnerName,
+                        partnerPhone,
+                        vehicleNumber,
+                        expectedDelivery,
+                        assignedAt: new Date(),
+                        trackingStatus: 'Picked up by delivery partner'
+                    },
+                    status: 'Out for Delivery'
+                }
+            }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error assigning delivery partner:', err);
+        res.status(500).json({ success: false });
     }
 });
 

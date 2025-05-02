@@ -1,8 +1,4 @@
-<head>
-    <title>Feedback Form</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-</head>
+
 <body class="feedback-body">
 <div class="feedback-header">
   <h1>Feedback Form</h1>
@@ -24,96 +20,7 @@
       <textarea id="message" name="message" placeholder="Enter your feedback" required></textarea>
     </div>
     <div class="form-group">
-      <button type="submit">Submit</button>
+      <button class="btn-primary " >Submit</button>
     </div>
   </form>
 </div>
-</body>
-<style>
-    body.feedback-body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-      color: #333;
-  }
-  
-  .feedback-header {
-      color: white;
-      padding: 20px;
-      margin-top: 3rem;
-      text-align: center;
-  }
-  
-  .feedback-container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .feedback-intro h2 {
-      text-align: center;
-     margin-bottom: 20px;
-  }
-  
-  .form-group {
-      margin-bottom: 15px;
-  }
-  
-  .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-  }
-  
-  .form-group input,
-  .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-      box-sizing: border-box;
-  }
-  
-  .form-group input:focus,
-  .form-group textarea:focus {
-      border-color: #4CAF50;
-      outline: none;
-  }
-  
-  textarea {
-      resize: vertical;
-      min-height: 100px;
-  }
-  
-  button[type="submit"] {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-  }
-  
-  button[type="submit"]:hover {
-      background-color: #45a049;
-  }
-  
-  @media (max-width: 600px) {
-      .feedback-container {
-          margin: 15px;
-          padding: 15px;
-      }
-  
-      button[type="submit"] {
-          width: 100%;
-      }
-  }
-</style>
-

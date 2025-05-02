@@ -1,246 +1,13 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f9fafb;
-        margin: 0;
-        padding: 0;
-    }
-
-    .order-success {
-        text-align: center;
-        margin-top: 24px;
-    }
-
-    .order-success h2 {
-        font-size: 24px;
-        font-weight: bold;
-        color: #ff9a47;
-    }
-
-    .invoice-container {
-        max-width: 800px; 
-        margin: 32px auto; 
-        padding: 32px;
-        background: white;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-    .invoice-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 24px;
-    }
-
-    .invoice-meta {
-        text-align: right;
-    }
-
-    .invoice-meta .label {
-        color: #94a3b8;
-    }
-
-    .invoice-meta .value {
-        font-weight: bold;
-        color: #ff9a47;
-    }
-
-    .company-info h2 {
-        font-size: 24px;
-        font-weight: bold;
-        color: #ff9a47;
-    }
-
-    .user-info {
-        display: flex;
-        justify-content: space-between;
-        background-color: #f1f5f9;
-        padding: 24px;
-        margin-bottom: 24px;
-        border-radius: 6px;
-    }
-
-    .user-info .user-left p {
-        margin: 4px 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .user-info .large {
-        font-size: 18px;
-    }
-
-    .user-info .bold {
-        font-weight: bold;
-    }
-
-    .color-main {
-        color: #ff9a47;
-    }
-
-    .invoice-table {
-        width: 100%;
-        font-size: 14px;
-        border-collapse: collapse;
-        margin-bottom: 24px;
-    }
-
-    .invoice-table th {
-        border-bottom: 2px solid #ff9a47;
-        text-align: left;
-        padding: 8px 0;
-        color: #ff9a47;
-    }
-
-    .invoice-table td {
-        padding: 8px 0;
-        border-bottom: 1px solid #d1d5db;
-    }
-
-    .text-right {
-        text-align: right;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .totals {
-        background-color: #f3f4f6;
-        padding: 24px;
-        border-radius: 6px;
-    }
-
-    .totals-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-    }
-
-    .totals-final {
-        display: flex;
-        justify-content: space-between;
-        background-color: #ff9a47;
-        color: white;
-        padding: 16px;
-        border-radius: 6px;
-        font-weight: bold;
-    }
-
-    .thank-you {
-        text-align: center;
-        margin-top: 32px;
-        color: #64748b;
-    }
-
-    .thank-you h4 {
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .download-btn-wrapper {
-        display: flex;
-        justify-content: center;
-        margin-top: 24px;
-    }
-
-    .download-btn-wrapper button {
-        background-color: #f97316;
-        color: white;
-        padding: 6px 12px;
-        font-size: 14px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease;
-        display: inline-block;
-        /* Ensure it doesn't stretch */
-        width: auto;
-        /* Set width to auto for regular button size */
-        margin-bottom: 2rem;
-    }
-
-
-    .download-btn-wrapper button:hover {
-        background-color: #ea580c;
-    }
-
-    @media print {
-        .download-btn-wrapper {
-            display: none;
-        }
-    }
-
-    .btn {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        margin: 5px;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: #fff;
-        border: none;
-        padding-bottom: 10px;
-        margin-bottom: 0
-
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
-    .btn-orange {
-        background-color: #f97316;
-        color: #fff;
-        border: none;
-    }
-
-    .btn-orange:hover {
-        background-color: #ea580c;
-    }
-
-    .download-btn-wrapper {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 24px;
-    }
-</style>
-
 <!-- Order Success Message -->
 <div class="order-success">
     <h2>Your order is successful!</h2>
 </div>
 
 <div class="download-btn-wrapper">
-    <button onclick="downloadPDF()" class="btn btn-orange">
+    <button onclick="downloadPDF()" class="btn btn-">
         <i class="fas fa-file-download" style="margin-right: 8px;"></i>Download PDF
     </button>
-    <button onclick="window.location.href='/'" class="btn btn-secondary">Go Back to Home</button>
+    <button onclick="window.location.href='/'" class="btn btn-secondary" style="margin-left: 10px;">Go Back to Home</button>
 </div>
 
 <!-- Invoice -->
@@ -332,3 +99,12 @@
         html2pdf().set(options).from(element).save();
     } 
 </script>
+
+<style>
+    .download-btn-wrapper button {
+        margin-right: 10px;
+    }
+    .download-btn-wrapper button:last-child {
+        margin-right: 0;
+    }
+</style>

@@ -17,7 +17,7 @@ const razorpay = new Razorpay({
 // Middleware to verify if the user is logged in
 const verifyLogin = (req, res, next) => {
     if (req.session.loggedIn) {
-        next();
+        next();  
     } else {
         res.redirect('/login?redirect=feed'); // Redirect with a query parameter
     }
@@ -271,7 +271,7 @@ router.post('/place-order', verifyLogin, async (req, res) => {
                 totalAmount,
                 paymentMethod,
                 address: userAddress?.address || {}, // Include the shipping address
-                status: 'Arriving Soon',
+                status: 'Ordered', // Changed from 'Arriving Soon' to 'Ordered'
                 createdAt: new Date(),
             };
 
@@ -386,19 +386,15 @@ router.post('/cancel-order', verifyLogin, async (req, res) => {
 // GET order details page
 router.get('/order-details/:id', verifyLogin, async (req, res) => {
     try {
-        const orderId = req.params.id;
-        const userId = req.session.user._id;
-
-        const order = await db.get().collection(collection.ORDER_COLLECTION).findOne({
-            _id: new ObjectId(orderId),
-            userId: new ObjectId(userId),
+        const order = await db.get().collection(collection.ORDER_COLLECTION).findOne(
+            { _id: new ObjectId(req.params.id) }
+        );
+        res.render('user/order-details', { 
+            order: {
+                ...order,
+                createdAt: order.createdAt // Make sure createdAt is included
+            }
         });
-
-        if (!order) {
-            return res.status(404).send('Order not found');
-        }
-
-        res.render('user/order-details', { order, user: req.session.user });
     } catch (err) {
         console.error('Error fetching order details:', err);
         res.status(500).send('Error fetching order details');
@@ -453,6 +449,28 @@ router.post('/submit-feedback', async (req, res) => {
 
 router.get('/terms-and-conditions', (req, res) => {
     res.render('user/terms-and-conditions', { user: req.session.user });
+});
+
+router.post('/update-delivery-status/:orderId', async (req, res) => {
+    try {
+        const orderId = req.params.orderId;
+        const { status, trackingStatus } = req.body;
+
+        await db.get().collection(collection.ORDER_COLLECTION).updateOne(
+            { _id: new ObjectId(orderId) },
+            {
+                $set: {
+                    status: status,
+                    'deliveryInfo.trackingStatus': trackingStatus
+                }
+            }
+        );
+
+        res.json({ success: true });
+    } catch (err) {
+        console.error('Error updating delivery status:', err);
+        res.status(500).json({ success: false });
+    }
 });
 
 module.exports = router;

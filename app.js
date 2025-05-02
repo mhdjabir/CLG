@@ -10,6 +10,7 @@ var { engine } = require('express-handlebars');
 var db = require('./config/connection'); // Database connection
 var adminRouter = require('./routes/admin');
 var userRouter = require('./routes/user');
+const compression = require('compression');
 
 var app = express();
 
@@ -24,7 +25,22 @@ app.engine('hbs', engine({
         multiply: (a, b) => a * b,
         add: (a, b) => a + b,
         subtract: (a, b) => a - b,
-        gt: (a, b) => a > b
+        gt: (a, b) => a > b,
+        formatDate: function(date) {
+            if (!date) return '';
+            const d = new Date(date);
+            return d.toLocaleDateString('en-IN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+        or: function() {
+            return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+        }
     }
 })); 
 
@@ -43,6 +59,14 @@ app.use(session({
   cookie: { maxAge: 60000000 },
   resave: false,
   saveUninitialized: false
+}));
+app.use(compression()); // Add this before routes
+
+// Add static file serving with cache
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true
 }));
 
 // Database connection
@@ -70,4 +94,6 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+
+
 

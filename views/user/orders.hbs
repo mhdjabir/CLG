@@ -9,8 +9,7 @@
                         <th>Order ID</th>
                         <th>Total Amount</th>
                         <th>Status</th>
-                        <th>Deliver In</th>
-                        <th>Actions</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,23 +19,21 @@
                         <td>{{this._id}}</td>
                         <td>₹{{this.totalAmount}}</td>
                         <td id="status-{{this._id}}">{{this.status}}</td>
-                        <td id="timer-{{this._id}}">
-                            {{#if (eq this.status "Arriving Soon")}}
-                                <span 
-                                    data-timer="{{this.remainingTime}}" 
-                                    data-created-at="{{this.createdAt}}" 
-                                    data-total-duration="86400" 
-                                    class="countdown">
-                                </span>
-                            {{/if}}
-                        </td>
-                        <td id="actions-{{this._id}}">
-                            <div class="d-flex gap-2">
-                                {{#if (eq this.status "Arriving Soon")}}
-                                    <button class="btn btn-danger btn-sm action-btn" onclick="cancelOrder('{{this._id}}')">Cancel</button>
-                                {{/if}}
-                                <a href="/order-details/{{this._id}}" class="btn btn-primary btn-sm action-btn">View</a>
 
+                        <td id="actions-{{this._id}}">
+                            <div class="d-flex gap-2 action-buttons">
+                                {{#if (or 
+                                    (eq this.status "Ordered")
+                                    (eq this.status "Processing")
+                                    (eq this.status "Arriving Soon")
+                                )}}
+                                    <button class="btn btn-danger btn-sm action-btn" onclick="cancelOrder('{{this._id}}')">
+                                    Cancel
+                                    </button>
+                                {{/if}}
+                                <a href="/order-details/{{this._id}}" class="btn btn-primary btn-sm action-btn">
+                                 View
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -68,53 +65,6 @@
             .catch(err => console.error('Error canceling order:', err));
         }
     }
-
-    // Function to initialize countdown timers
-    function initializeTimers() {
-        const timers = document.querySelectorAll('.countdown');
-        timers.forEach(timer => {
-            const createdAt = new Date(timer.getAttribute('data-created-at')); // Order creation time
-            const totalDuration = parseInt(timer.getAttribute('data-total-duration'), 10); // Total duration in seconds
-            const currentTime = new Date();
-            const elapsedTime = Math.floor((currentTime - createdAt) / 1000); // Elapsed time in seconds
-            const remainingTime = totalDuration - elapsedTime;
-
-            if (remainingTime > 0) {
-                const interval = setInterval(() => {
-                    const currentTime = new Date();
-                    const elapsedTime = Math.floor((currentTime - createdAt) / 1000);
-                    const remainingTime = totalDuration - elapsedTime;
-
-                    if (remainingTime <= 0) {
-                        clearInterval(interval);
-                        const orderId = timer.closest('tr').id.split('-')[2];
-                        document.getElementById(`status-${orderId}`).textContent = 'Arrived';
-                        timer.textContent = '';
-                        // Hide the cancel button
-                        const cancelButton = document.querySelector(`#actions-${orderId} .btn-danger`);
-                        if (cancelButton) {
-                            cancelButton.style.display = 'none';
-                        }
-                    } else {
-                        const hours = Math.floor(remainingTime / 3600);
-                        const minutes = Math.floor((remainingTime % 3600) / 60);
-                        const seconds = remainingTime % 60;
-                        timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
-                    }
-                }, 1000);
-            } else {
-                const orderId = timer.closest('tr').id.split('-')[2];
-                document.getElementById(`status-${orderId}`).textContent = 'Arrived';
-                timer.textContent = '';
-                // Hide the cancel button
-                const cancelButton = document.querySelector(`#actions-${orderId} .btn-danger`);
-                if (cancelButton) {
-                    cancelButton.style.display = 'none';
-                }
-            }
-        });
-    }
-
     // Initialize timers on page load
     document.addEventListener('DOMContentLoaded', initializeTimers);
 </script>
@@ -135,4 +85,5 @@
         text-align: center;
     }
 </style>
+
 

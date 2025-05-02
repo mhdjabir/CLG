@@ -67,5 +67,24 @@ module.exports = {
             }
         });
     },
+    getProductsPaginated: (page, limit) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const skip = (page - 1) * limit;
+                
+                const products = await db.get()
+                    .collection(collection.PRODUCT_COLLECTION)
+                    .find()
+                    .skip(skip)
+                    .limit(limit)
+                    .toArray();
+
+                resolve(products);
+            } catch (err) {
+                console.error('Error fetching paginated products:', err);
+                reject(err);
+            }
+        });
+    },
     
 };

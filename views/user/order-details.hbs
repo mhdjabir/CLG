@@ -1,11 +1,36 @@
 <section>
     <div class="container mt-3">
         <h2 class="text-center">Order Details</h2>
-        <div class="order-summary mt-4">
-            <h4>Order ID: {{order._id}}</h4>
-            <h4>Total Amount: ₹{{order.totalAmount}}</h4>
-            <h4>Status: {{order.status}}</h4>
+        <div class="order-summary mt-4"> 
+                <h4><span class="label">Order ID:</span> {{order._id}}</h4>
+                <h4><span class="label">Total Amount:</span> ₹{{order.totalAmount}}</h4>
+                <h4><span class="label">Status:</span> <span class="status-badge {{order.status}}">{{order.status}}</span></h4>
+                <h4><span class="label">Order Date:</span> <span class="date-text">{{formatDate order.createdAt}}</span></h4>
         </div>
+        {{#if order.deliveryInfo}}
+        <div class="delivery-tracking mt-4" data-expected-delivery="{{order.deliveryInfo.expectedDelivery}}" data-order-id="{{order._id}}">
+            <h4>Delivery Tracking</h4>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Delivery Partner:</strong> {{order.deliveryInfo.partnerName}}</p>
+                            <p><strong>Contact:</strong> {{order.deliveryInfo.partnerPhone}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Vehicle:</strong> {{order.deliveryInfo.vehicleNumber}}</p>
+                            <p><strong>Expected Delivery:</strong> {{formatDate order.deliveryInfo.expectedDelivery}}</p>
+                        </div>
+                    </div>
+                    <div class="tracking-status mt-3">
+                        <p><strong>Current Status:</strong> 
+                            <span class="badge delivery-status-badge bg-info">{{order.deliveryInfo.trackingStatus}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/if}}
         <div class="table-responsive mt-2">
             <table class="table table-striped">
                 <thead>
@@ -31,37 +56,7 @@
             </table>
         </div>
         <div class="text-start mt-2">
-            <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+            <a href="/orders" class="btn btn-primary">Back to Orders</a>
         </div>
     </div>
 </section>
-
-<style> 
-    .text-start {
-        color: #ff9a47;
-        font-size: clamp(2rem, 5vw, 2.5rem);
-        text-align: center;
-    }
-
-    .order-summary h4 {
-        font-size: clamp(1rem, 3vw, 1.2rem); 
-        color: #444;
-        margin-bottom: 0.5rem;
-    }
-
-    .btn-secondary {
-        background-color: #007bff;
-        color: #fff;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-        background-color: #0056b3;
-        color: #fff;
-    }
-
-</style>

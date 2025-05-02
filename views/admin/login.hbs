@@ -1,0 +1,46 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Admin Login</h3>
+                </div>
+                <div class="card-body">
+                    {{#if loginError}}
+                    <div class="alert alert-danger">{{loginError}}</div>
+                    {{/if}}
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-primary active" onclick="showLogin('admin')">Admin</button>
+                            <button type="button" class="btn btn-primary" onclick="showLogin('delivery')">Delivery</button>
+                        </div>
+                    </div>
+                    <form id="adminLoginForm" action="/admin/login" method="POST">
+                        <input type="hidden" name="role" id="roleInput" value="admin">
+                        <div class="form-group mb-3">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Password</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showLogin(role) {
+    document.getElementById('roleInput').value = role;
+    const form = document.getElementById('adminLoginForm');
+    const buttons = document.querySelectorAll('.btn-group .btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+</script>

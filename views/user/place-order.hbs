@@ -1,3 +1,16 @@
+<style>
+h2{
+  color: #ff9a47;
+  font-size: 2rem;
+  font-weight: 600;
+}
+h3{
+  color: #ff9a47;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+</style>
 <div class="container1">
 
   <div class="shipping-info">
@@ -28,7 +41,7 @@
         <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
         <span id="phoneError" class="error-message"></span> <!-- Error message container -->
       </div>
-      <button type="submit" id="saveButton" class="btn">Save</button>
+      <button type="submit" id="saveButton" class="btn btn-success">Save</button>
     </form>
   </div> 
 
@@ -52,7 +65,7 @@
     </div>
 
     <div class="checkout-button">
-      <button id="checkoutButton" type="button" class="btn" style="display: none;">Checkout</button>
+      <button id="checkoutButton" type="button" class="btn btn-success" style="display: none;">Checkout</button>
       <form id="proceedToPayForm" action="/create-order" method="POST" style="display: none;">
         <input type="hidden" name="amount" value="{{total}}">
         <input type="hidden" name="paymentMethod" value="Online Payment">
@@ -236,117 +249,3 @@
     }
   });
 </script>
-
-<style>
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-  }
-
-  .container1 {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .page-title {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2.5em;
-    color: #333;
-  }
-
-  .order-summary,
-  .shipping-info {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-
-  .order-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-  }
-
-  .order-table th,
-  .order-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-
-  .order-table th {
-    background-color: #f8f8f8;
-    font-weight: bold;
-  }
-
-  .form-group {
-    margin-bottom: 15px;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-
-  .form-group input,
-  .form-group select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-  }
-
-  #saveButton.edit {
-    background-color: #007bff; /* Blue color */
-    color: #fff;
-  }
-
-  #saveButton.edit:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
-
-  .btn {
-    display: inline-block;
-    background-color: #218838 ;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    text-align: center;
-  }
-
-  .btn:hover {
-    background-color: #28a745;
-    color: rgb(255, 255, 255);
-  }
-
-  .payment-method {
-    margin-top: 20px;
-  }
-
-  .checkout-button {
-    margin-top: 20px;
-    text-align: right;
-  }
-
-  .error-message {
-    color: red;
-    font-size: 12px;
-    margin-top: 4px;
-    display: none; /* Initially hidden */
-  }
-
-  .input-error {
-    border: 1px solid red;
-  }
-</style>
